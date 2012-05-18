@@ -35,8 +35,19 @@
     </footer>
   </div> <!--! end of #container -->
 
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-  <script defer src="js/easing.js"></script>
-  <script defer src="js/script.js"></script>
+  	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  	<script defer src="js/easing.js"></script>
+  	<script defer src="js/carousel.min.js"></script>
+	<script>
+		$().ready(function(){
+			$('#carousel').carousel({
+				speed: 700,
+				easing: 'easeInOutCirc',
+				autoplay: 7000,
+				slide: function(){if(window.console)console.log('Slide')},
+				slid: function(){if(window.console)console.log('Slid')}
+			});
+		});
+	</script>
 </body>
 </html>

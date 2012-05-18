@@ -1,14 +1,3 @@
-$().ready(function(){
-	$('#carousel').carousel({
-		speed: 700,
-		easing: 'easeInOutCirc',
-		autoplay: 7000,
-		slide: function(){if(window.console)console.log('Slide')},
-		slid: function(){if(window.console)console.log('Slid')}
-	});
-});
-
-
 ;(function ( $, window, document, undefined ) {
 
     var pluginName = 'carousel',
