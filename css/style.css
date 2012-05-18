@@ -1,0 +1,8 @@
+.carouselCont{height: 305px;overflow: hidden;position: relative;width: 610px;}
+#carouselMask{position:absolute;left:0px;top:0px;}
+.slide{float:left;}
+.next{
+}
+.prev{
+	
+}	
