@@ -4,6 +4,7 @@ Carousel
 This is the basic HTML structure required (element agnostic):
 -------------
 
+```html
 	<div id="carousel">
 		<div class="carouselCont">
 			<div id="carouselMask">
@@ -15,13 +16,15 @@ This is the basic HTML structure required (element agnostic):
 		<a class="prev" href="#">Previous</a>
 		<a class="next" href="#">Next</a>	
 	</div>
-	
+```
+
 ### Here's the JavaScript:
 
+```javascript
 	$().ready(function(){
 		$('#carousel').carousel();
 	});
-	
+```	
 ## DOCS
 
 ### Requirements
