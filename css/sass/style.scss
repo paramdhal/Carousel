@@ -1,0 +1,116 @@
+// GENERAL STYLE
+//
+
+#carouselMask {
+  position: absolute;
+  left: 0px;
+  top: 0px; 
+}
+
+.carouselCont{
+  overflow: hidden;
+  position: relative;
+}
+
+#topBanner, #bottomBanner {
+  height: 30px;
+  overflow: hidden;
+  padding: 0 30px;
+}
+
+#bottomBanner {
+  height: 60px;
+}
+
+.fullScreen #view-fullscreen, #cancel-fullscreen {
+  display: none;
+}
+
+.fullScreen #cancel-fullscreen, #view-fullscreen {
+  display: block;
+}
+
+.active {
+  color: red;
+}
+
+.carouselNavItem{
+  cursor: pointer;
+}
+
+//MAIN EXAMPLE
+//
+
+#main{
+  width:1000px;
+  margin: 0 auto;
+  padding: 100px 0;
+  .carouselCont{
+    height: 305px;
+    width: 610px;
+  }
+  .slide{
+    float:left;
+  }
+}
+
+//RESPONSIVE
+//
+
+.responsive{
+  .carouselCont {
+    width: 100%;
+  }
+  .slide {
+    float: left;
+    position: relative;
+    overflow: hidden;
+    span{
+      position: absolute;
+      left: 30px;
+      top: 30px;
+      color: white;
+      font-weight: bold;
+      font-size: 30px;
+    }
+  }
+  .next {
+    position: absolute;
+    right: 0;
+    top: 50%;
+  }
+
+  .prev {
+    position: absolute;
+    left: 0;
+    top: 50%;
+  }
+
+  .carouselCont {
+    margin: 0 auto;
+  }
+
+  .carouselCont img {
+    width: auto;
+    height: 100%;
+    display: block;
+  }
+}
+
+//FULLSCREEN2
+//
+
+#fullscreen2{
+  .carouselCont img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  #carousel {
+    margin: 0 80px;
+   } 
+} 
+
+
+
+

@@ -1,0 +1,93 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+  <meta charset="utf-8">
+
+    <title>Full screen example</title>
+  
+
+  <link rel="stylesheet" href="../css/compiled/style.css">
+	<link rel="stylesheet" href="../css/compiled/reset.css">
+
+</head>
+
+<body>
+
+  <div id="container">
+    <header> 
+    
+
+    </header>
+    <div id="fullscreen" class="responsive" role="main">
+		
+    	
+    	<div id="topBanner">
+			Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+			tempor incididunt ut labore et dolore magna aliqua. 
+		</div>
+
+		<div id="carousel">
+			<div class="carouselCont">
+				<div id="carouselMask">
+					<div class="slide"><img src="../images/large1.jpg"/></div>
+					<div class="slide"><img src="../images/large2.jpg"/></div>
+					<div class="slide"><img src="../images/large3.jpg"/></div>
+				</div>
+			</div>	
+			<a class="prev" href="#">Previous</a>
+			<a class="next" href="#">Next</a>
+			
+		</div>
+		
+		<div id="bottomBanner">
+			Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+			tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+			quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+			consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+			cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+			proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		</div>
+						
+		
+    </div>
+    <footer>
+    	
+    </footer>
+  </div> <!--! end of #container -->
+
+  	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  	<script defer src="../js/easing.js"></script>
+  	<script defer src="../js/fullscreen.js"></script>
+  	<script defer src="../js/script.js"></script>
+	<script>
+		
+		$().ready(function(){
+
+			resizeImagePanel();
+			$(window).resize(function() {
+				resizeImagePanel();
+			});
+			$('#carousel').carousel({
+				speed: 700,
+				easing: 'easeInOutCirc',
+				autoplay: 7000,
+				navigation:false,
+				auto:false,
+				responsive:true
+			});
+			
+		});
+
+		function resizeImagePanel(){
+			var topBanner = $('#topBanner').height();
+			var bottomBanner = $('#bottomBanner').height();
+
+			var calculatedHeight=$(window).height()-topBanner-bottomBanner;
+			$('.carouselCont,.slide').height(calculatedHeight);
+			$('.carouselCont,.slide').css({'width':'auto'}).width($('img').width());
+			
+		}
+		
+	</script>
+</body>
+</html>
