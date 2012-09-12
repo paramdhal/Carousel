@@ -48,7 +48,7 @@
 					$this.setDimensions(li, ul);
 				});
 			}
-			
+
 		},
 		setDimensions: function(li, ul) {
 			liSize = li.width();
@@ -87,7 +87,7 @@
 				if (this.options.navigation) {
 					var slide;
 					if (to > itemLength - 2) {
-						slide = parseInt(to - itemLength + 2,10);
+						slide = parseInt(to - itemLength + 2, 10);
 					} else if (to <= 0) {
 						slide = to + itemLength - 2;
 					} else {
@@ -97,7 +97,7 @@
 					var navItem = $($this.element).find('.carouselNavItem');
 					navItem.removeClass('active');
 
-					navItem.eq(parseInt(slide - 1,10)).addClass('active');
+					navItem.eq(parseInt(slide - 1, 10)).addClass('active');
 				}
 
 			}
@@ -151,13 +151,13 @@
 			if (this.options.navigation) {
 				var html = '<div class="carousuelNav">';
 				for (var i = 0; i < itemLength - 2; i++) {
-					html += '<span class="carouselNavItem">' + parseInt(i + 1,10) + '</span>';
+					html += '<span class="carouselNavItem">' + parseInt(i + 1, 10) + '</span>';
 				}
 				html += '</div>';
 				$(this.element).append(html);
 				$(this.element).find('.carousuelNav').on('click', 'span', function() {
 					var animateTo = $(this).text();
-					$this.cAnimate(parseInt(animateTo,10));
+					$this.cAnimate(parseInt(animateTo, 10));
 				});
 				$(this.element).find('.carouselNavItem:first').addClass('active');
 			}
@@ -245,32 +245,44 @@
 
 })(jQuery, window, document);
 
-!function($) {
+
+!
+function($) {
 
 	$(function() {
 
-		"use strict";
+		"use strict"; // jshint ;_;
+
+		/* CSS TRANSITION SUPPORT (http://www.modernizr.com/)
+		 * ======================================================= */
 
 		$.support.transition = (function() {
-			var thisBody = document.body || document.documentElement,
-				thisStyle = thisBody.style,
-				support = thisStyle.transition !== undefined || thisStyle.WebkitTransition !== undefined || thisStyle.MozTransition !== undefined || thisStyle.MsTransition !== undefined || thisStyle.OTransition !== undefined;
 
-			return support && {
-				end: (function() {
-					var transitionEnd = "TransitionEnd";
-					if ($.browser.webkit) {
-						transitionEnd = "webkitTransitionEnd";
-					} else if ($.browser.mozilla) {
-						transitionEnd = "transitionend";
-					} else if ($.browser.opera) {
-						transitionEnd = "oTransitionEnd";
+			var transitionEnd = (function() {
+
+				var el = document.createElement('bootstrap'),
+					transEndEventNames = {
+						'WebkitTransition': 'webkitTransitionEnd',
+						'MozTransition': 'transitionend',
+						'OTransition': 'oTransitionEnd otransitionend',
+						'transition': 'transitionend'
+					},
+					name;
+
+				for (name in transEndEventNames) {
+					if (el.style[name] !== undefined) {
+						return transEndEventNames[name];
 					}
-					return transitionEnd;
-				}())
+				}
+
+			}());
+
+			return transitionEnd && {
+				end: transitionEnd
 			};
+
 		})();
 
 	});
 
-}(window,jQuery);
+}(window.jQuery);
