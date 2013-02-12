@@ -43,6 +43,8 @@
 
 .responsive .carouselCont {
   width: 100%; }
+.responsive #carousel {
+  width: 100%; }
 .responsive .slide {
   float: left;
   position: relative;

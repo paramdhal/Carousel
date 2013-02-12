@@ -23,6 +23,7 @@
 		this.images = this.el.find('img');
 		this.slideWidth= "";
 		this.current = 1;
+		this.bezierVal = null;
 		this.options = $.extend({}, defaults, options);
 		this._defaults = defaults;
 		this._name = pluginName;
@@ -30,7 +31,7 @@
 	}
 
 	var animationComplete = true,
-		cTimer,bezierVal;
+		cTimer;
 
 	Carousel.prototype = {
 		init: function() {
@@ -41,7 +42,7 @@
 			obj.slides = obj.mask.children();
 			obj.numberOfSlides = this.slides.size();
 			obj.setDimensions();
-			bezierVal = getEasing(obj.options.easing);
+			obj.bezierVal = getEasing(obj.options.easing);
 			obj.carouselButtons();
 			obj.autoSlide();
 			obj.hoverFunc();
@@ -56,12 +57,11 @@
 		},
 		setDimensions: function() {
 			var obj = this;
-			console.log(obj.slides.width());
 			obj.slides.width(obj.el.width());
 			obj.container.height(obj.images.height());
 			obj.slideWidth = obj.slides.width();
 			obj.mask.width(obj.numberOfSlides * obj.slideWidth);
-			obj.mask.css('left', -obj.slideWidth * obj.current);
+			obj.setPosition(obj.mask,-obj.slideWidth * obj.current);
 		},
 		carouselButtons: function() {
 			var obj = this;
@@ -78,14 +78,10 @@
 			var obj = this;
 			if (animationComplete && obj.current !== to) {
 				if (to <= -1) {
-					obj.mask.css({
-						left: -obj.slideWidth * (obj.numberOfSlides - 2) + "px"
-					});
+					obj.setPosition(obj.mask,-obj.slideWidth * (obj.numberOfSlides - 2));
 					obj.current = obj.numberOfSlides - 3;
 				} else if (to >= obj.numberOfSlides) {
-					obj.mask.css({
-						left: -obj.slideWidth + "px"
-					});
+					obj.setPosition(obj.mask,-obj.slideWidth);
 					obj.current = 2;
 				} else {
 					obj.current = to;
@@ -104,7 +100,6 @@
 
 					var navItem = obj.el.find('.carouselNavItem');
 					navItem.removeClass('active');
-
 					navItem.eq(parseInt(slide - 1, 10)).addClass('active');
 				}
 
@@ -118,10 +113,8 @@
 			if ($.support.transition) {
 
 				obj.mask.fadeIn('100', function() {
-					$(element).css({
-						left: "-" + position + "px"
-					});
-					setAnimation(element, obj.options.speed, bezierVal);
+					obj.setPosition(element,-position);
+					setAnimation(element, obj.options.speed, obj.bezierVal);
 					$(element).one($.support.transition.end, function() {
 						animationComplete = true;
 						if (obj.options.slid) obj.options.slid();
@@ -135,6 +128,13 @@
 					animationComplete = true;
 					if (obj.options.slid) obj.options.slid();
 				});
+			}
+		},
+		setPosition: function(el,val){
+			if(typeof Modernizr.csstransforms3d !== 'undefined'){
+				prefixer(el,{transform:"translate3d("+val+"px,0,0)"});
+			}else{
+				$(el).css({left: val + "px"});
 			}
 		},
 		autoSlide: function() {
@@ -174,24 +174,27 @@
 	};
 
 	function setAnimation(selector, time, bezier) {
+		prefixer(selector,{transition:"all "+time+"ms cubic-bezier(" + bezier + ") 0s"});
+	}
+
+	function removeAnimation(selector) {
+		prefixer(selector,{transition:"none"});
+	}
+
+	function prefixer(selector,style){
 		var prefixes = ["-webkit-", "-moz-", "-ms-", "-o-", ""];
 		$(prefixes).each(function() {
-			var prefix = this + 'transition',
-				aniArgs = {};
-			aniArgs[prefix] = 'left ' + time + 'ms cubic-bezier(' + bezier + ') 0s';
+			
+			var aniArgs = {},
+				prefix = this;
+
+			for(var key in style){
+				aniArgs[prefix+key] = style[key];
+			}
 			selector.css(aniArgs);
 		});
 	}
 
-	function removeAnimation(selector) {
-		var prefixes = ["-webkit-", "-moz-", "-ms-", "-o-", ""];
-		$(prefixes).each(function() {
-			var prefix = this + 'transition',
-				aniArgs = {};
-			aniArgs[prefix] = 'none';
-			selector.css(aniArgs);
-		});
-	}
 	var getEasing = (function() {
 
 		var cache = {};
