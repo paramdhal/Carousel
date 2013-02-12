@@ -131,7 +131,7 @@
 			}
 		},
 		setPosition: function(el,val){
-			if(typeof Modernizr.csstransforms3d !== 'undefined'){
+			if(typeof Modernizr.csstransforms3d !== 'undefined' && Modernizr.csstransforms3d){
 				prefixer(el,{transform:"translate3d("+val+"px,0,0)"});
 			}else{
 				$(el).css({left: val + "px"});
@@ -257,8 +257,7 @@
 })(jQuery, window, document);
 
 
-!
-function($) {
+!function($) {
 
 	$(function() {
 
