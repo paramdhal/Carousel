@@ -1,3 +1,6 @@
+#carousel {
+  width: 610px; }
+
 #carouselMask {
   position: absolute;
   left: 0px;
@@ -35,7 +38,8 @@
     height: 305px;
     width: 610px; }
   #main .slide {
-    float: left; }
+    float: left;
+    width: 610px; }
 
 .responsive .carouselCont {
   width: 100%; }

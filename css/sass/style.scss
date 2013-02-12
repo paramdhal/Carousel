@@ -1,6 +1,10 @@
 // GENERAL STYLE
 //
 
+#carousel{
+  width: 610px;
+}
+
 #carouselMask {
   position: absolute;
   left: 0px;
@@ -51,6 +55,7 @@
   }
   .slide{
     float:left;
+    width: 610px;
   }
 }
 

@@ -2,99 +2,107 @@
 
 	var pluginName = 'carousel',
 		defaults = {
-			speed: 500,
-			easing: 'linear',
-			autoplay: 4000,
-			auto: true,
+			speed: 800,
+			easing: 'easeInOutExpo',
+			autoplay: 8000,
+			auto: false,
 			prev: 'prev',
 			next: 'next',
 			slide: null,
 			slid: null,
-			navigation: false,
+			navigation: true,
 			responsive: false
 		};
 
 	function Carousel(element, options) {
-		this.element = element;
+		this.el = $(element);
+		this.container = this.el.children(':first-child');
+		this.mask = this.container.children(':first-child');
+		this.slides =  null;
+		this.numberOfSlides = 0;
+		this.images = this.el.find('img');
+		this.slideWidth= "";
+		this.current = 1;
 		this.options = $.extend({}, defaults, options);
 		this._defaults = defaults;
 		this._name = pluginName;
 		this.init();
 	}
 
-	var curr = 1,
-		animationComplete = true,
-		cTimer, div, ul, itemLength, liSize, bezierVal;
+	var animationComplete = true,
+		cTimer,bezierVal;
 
 	Carousel.prototype = {
 		init: function() {
-			div = $(this.element);
-			ul = $(div).children(':first-child').children(':first-child');
-			var tLi = $(ul).children(),
+			var obj = this;
+			var tLi = $(obj.mask).children(),
 				tl = tLi.size();
-			ul.prepend(tLi.slice(tl - 1).clone()).append(tLi.slice(0, 1).clone());
-			var li = $(ul).children();
-			itemLength = li.size();
-			this.setDimensions(li, ul);
-			bezierVal = getEasing(this.options.easing);
-			this.carouselButtons();
-			this.autoSlide();
-			this.hoverFunc();
-			this.createNavigation();
-			var $this = this;
+			obj.mask.prepend(tLi.slice(tl - 1).clone()).append(tLi.slice(0, 1).clone());
+			obj.slides = obj.mask.children();
+			obj.numberOfSlides = this.slides.size();
+			obj.setDimensions();
+			bezierVal = getEasing(obj.options.easing);
+			obj.carouselButtons();
+			obj.autoSlide();
+			obj.hoverFunc();
+			obj.createNavigation();
 
-			if (this.options.responsive) {
+			if (obj.options.responsive) {
 				$(window).resize(function() {
-					$this.setDimensions(li, ul);
+					obj.setDimensions();
 				});
 			}
 
 		},
-		setDimensions: function(li, ul) {
-			liSize = li.width();
-			ul.width(itemLength * liSize);
-			ul.css('left', -liSize * curr);
+		setDimensions: function() {
+			var obj = this;
+			console.log(obj.slides.width());
+			obj.slides.width(obj.el.width());
+			obj.container.height(obj.images.height());
+			obj.slideWidth = obj.slides.width();
+			obj.mask.width(obj.numberOfSlides * obj.slideWidth);
+			obj.mask.css('left', -obj.slideWidth * obj.current);
 		},
 		carouselButtons: function() {
-			var $this = this;
-			$($this.element).find('a.' + $this.options.next).click(function() {
-				$this.cAnimate(curr + 1);
+			var obj = this;
+			obj.el.find('a.' + obj.options.next).click(function() {
+				obj.cAnimate(obj.current + 1);
 				return false;
 			});
-			$($this.element).find('a.' + $this.options.prev).click(function() {
-				$this.cAnimate(curr - 1);
+			obj.el.find('a.' + obj.options.prev).click(function() {
+				obj.cAnimate(obj.current - 1);
 				return false;
 			});
 		},
 		cAnimate: function(to) {
-			var $this = this;
-			if (animationComplete && curr !== to) {
+			var obj = this;
+			if (animationComplete && obj.current !== to) {
 				if (to <= -1) {
-					ul.css({
-						left: -liSize * (itemLength - 2) + "px"
+					obj.mask.css({
+						left: -obj.slideWidth * (obj.numberOfSlides - 2) + "px"
 					});
-					curr = itemLength - 3;
-				} else if (to >= itemLength) {
-					ul.css({
-						left: -liSize + "px"
+					obj.current = obj.numberOfSlides - 3;
+				} else if (to >= obj.numberOfSlides) {
+					obj.mask.css({
+						left: -obj.slideWidth + "px"
 					});
-					curr = 2;
+					obj.current = 2;
 				} else {
-					curr = to;
+					obj.current = to;
 				}
-				this.carouselAnimation(ul, curr * liSize);
+				obj.carouselAnimation(obj.mask, obj.current * obj.slideWidth);
 
-				if (this.options.navigation) {
+				if (obj.options.navigation) {
 					var slide;
-					if (to > itemLength - 2) {
-						slide = parseInt(to - itemLength + 2, 10);
+					if (to > obj.numberOfSlides - 2) {
+						slide = parseInt(to - obj.numberOfSlides + 2, 10);
 					} else if (to <= 0) {
-						slide = to + itemLength - 2;
+						slide = to + obj.numberOfSlides - 2;
 					} else {
 						slide = to;
 					}
 
-					var navItem = $($this.element).find('.carouselNavItem');
+					var navItem = obj.el.find('.carouselNavItem');
 					navItem.removeClass('active');
 
 					navItem.eq(parseInt(slide - 1, 10)).addClass('active');
@@ -103,63 +111,63 @@
 			}
 		},
 		carouselAnimation: function(element, position) {
-			var $this = this;
+			var obj = this;
 			animationComplete = false;
 			if (this.options.slide) this.options.slide();
 
 			if ($.support.transition) {
 
-				ul.fadeIn('100', function() {
+				obj.mask.fadeIn('100', function() {
 					$(element).css({
 						left: "-" + position + "px"
 					});
-					setAnimation(element, $this.options.speed, bezierVal);
+					setAnimation(element, obj.options.speed, bezierVal);
 					$(element).one($.support.transition.end, function() {
 						animationComplete = true;
-						if ($this.options.slid) $this.options.slid();
-						removeAnimation(ul);
+						if (obj.options.slid) obj.options.slid();
+						removeAnimation(obj.mask);
 					});
 				});
 			} else {
 				$(element).filter(':not(:animated)').animate({
 					left: "-" + position + "px"
-				}, $this.options.speed, $this.options.easing, function() {
+				}, obj.options.speed, obj.options.easing, function() {
 					animationComplete = true;
-					if ($this.options.slid) $this.options.slid();
+					if (obj.options.slid) obj.options.slid();
 				});
 			}
 		},
 		autoSlide: function() {
-			var $this = this;
-			if ($this.options.auto === true) {
+			var obj = this;
+			if (obj.options.auto === true) {
 				cTimer = setInterval(function() {
-					$this.cAnimate(curr + 1);
-				}, $this.options.autoplay);
+					obj.cAnimate(obj.current + 1);
+				}, obj.options.autoplay);
 			}
 		},
 		hoverFunc: function() {
-			var $this = this;
-			div.hover(function() {
+			var obj = this;
+			obj.el.hover(function() {
 				clearInterval(cTimer);
 			}, function() {
-				$this.autoSlide();
+				obj.autoSlide();
 			});
 		},
 		createNavigation: function() {
 
-			var $this = this;
-			if (this.options.navigation) {
+			var obj = this;
+			if (obj.options.navigation) {
 				var html = '<div class="carousuelNav">';
-				for (var i = 0; i < itemLength - 2; i++) {
+				for (var i = 0; i < obj.numberOfSlides - 2; i++) {
 					html += '<span class="carouselNavItem">' + parseInt(i + 1, 10) + '</span>';
 				}
 				html += '</div>';
-				$(this.element).append(html);
-				$(this.element).find('.carousuelNav').on('click', 'span', function() {
+				obj.el.append(html);
+				obj.el.find('.carousuelNav').on('click', 'span', function() {
 					var animateTo = $(this).text();
-					$this.cAnimate(parseInt(animateTo, 10));
+					obj.cAnimate(parseInt(animateTo, 10));
 				});
-				$(this.element).find('.carouselNavItem:first').addClass('active');
+				obj.el.find('.carouselNavItem:first').addClass('active');
 			}
 
 		}
