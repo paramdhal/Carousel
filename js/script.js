@@ -4,13 +4,13 @@
 		defaults = {
 			speed: 800,
 			easing: 'easeInOutExpo',
-			autoplay: 8000,
-			auto: false,
+			autoplay: 1000,
+			auto: true,
 			prev: 'prev',
 			next: 'next',
 			slide: null,
 			slid: null,
-			navigation: true,
+			navigation: false,
 			responsive: false
 		};
 
@@ -24,14 +24,13 @@
 		this.slideWidth= "";
 		this.current = 1;
 		this.bezierVal = null;
+		this.aComplete = true;
 		this.options = $.extend({}, defaults, options);
 		this._defaults = defaults;
 		this._name = pluginName;
+		this.timer = null;
 		this.init();
 	}
-
-	var animationComplete = true,
-		cTimer;
 
 	Carousel.prototype = {
 		init: function() {
@@ -51,6 +50,7 @@
 			if (obj.options.responsive) {
 				$(window).resize(function() {
 					obj.setDimensions();
+					removeAnimation(obj.mask);
 				});
 			}
 
@@ -58,7 +58,9 @@
 		setDimensions: function() {
 			var obj = this;
 			obj.slides.width(obj.el.width());
-			obj.container.height(obj.images.height());
+			if(obj.options.responsive){
+				obj.container.height(obj.images.height());
+			}
 			obj.slideWidth = obj.slides.width();
 			obj.mask.width(obj.numberOfSlides * obj.slideWidth);
 			obj.setPosition(obj.mask,-obj.slideWidth * obj.current);
@@ -76,11 +78,13 @@
 		},
 		cAnimate: function(to) {
 			var obj = this;
-			if (animationComplete && obj.current !== to) {
+			if (obj.aComplete && obj.current !== to) {
 				if (to <= -1) {
+					removeAnimation(obj.mask);
 					obj.setPosition(obj.mask,-obj.slideWidth * (obj.numberOfSlides - 2));
 					obj.current = obj.numberOfSlides - 3;
 				} else if (to >= obj.numberOfSlides) {
+					removeAnimation(obj.mask);
 					obj.setPosition(obj.mask,-obj.slideWidth);
 					obj.current = 2;
 				} else {
@@ -107,7 +111,7 @@
 		},
 		carouselAnimation: function(element, position) {
 			var obj = this;
-			animationComplete = false;
+			obj.aComplete = false;
 			if (this.options.slide) this.options.slide();
 
 			if ($.support.transition) {
@@ -116,21 +120,26 @@
 					obj.setPosition(element,-position);
 					setAnimation(element, obj.options.speed, obj.bezierVal);
 					$(element).one($.support.transition.end, function() {
-						animationComplete = true;
-						if (obj.options.slid) obj.options.slid();
-						removeAnimation(obj.mask);
+						obj.animationComplete();
 					});
 				});
 			} else {
 				$(element).filter(':not(:animated)').animate({
 					left: "-" + position + "px"
 				}, obj.options.speed, obj.options.easing, function() {
-					animationComplete = true;
-					if (obj.options.slid) obj.options.slid();
+					obj.animationComplete();
 				});
 			}
 		},
+		animationComplete: function(){
+			var obj =this;
+			obj.autoSlide();
+			obj.aComplete = true;
+			if (obj.options.slid) obj.options.slid();
+			removeAnimation(obj.mask);
+		},
 		setPosition: function(el,val){
+			var obj= this;
 			if(typeof Modernizr.csstransforms3d !== 'undefined' && Modernizr.csstransforms3d){
 				prefixer(el,{transform:"translate3d("+val+"px,0,0)"});
 			}else{
@@ -139,8 +148,9 @@
 		},
 		autoSlide: function() {
 			var obj = this;
-			if (obj.options.auto === true) {
-				cTimer = setInterval(function() {
+			if (obj.options.auto) {
+				clearTimeout(obj.timer);
+				obj.timer = setTimeout(function() {
 					obj.cAnimate(obj.current + 1);
 				}, obj.options.autoplay);
 			}
@@ -148,7 +158,7 @@
 		hoverFunc: function() {
 			var obj = this;
 			obj.el.hover(function() {
-				clearInterval(cTimer);
+				clearTimeout(obj.timer);
 			}, function() {
 				obj.autoSlide();
 			});
