@@ -136,7 +136,6 @@
 			obj.autoSlide();
 			obj.aComplete = true;
 			if (obj.options.slid) obj.options.slid();
-			removeAnimation(obj.mask);
 		},
 		setPosition: function(el,val){
 			var obj= this;
