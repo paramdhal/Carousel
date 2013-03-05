@@ -29,6 +29,7 @@
 		this._defaults = defaults;
 		this._name = pluginName;
 		this.timer = null;
+		this.hovered = false;
 		this.init();
 	}
 
@@ -147,7 +148,7 @@
 		},
 		autoSlide: function() {
 			var obj = this;
-			if (obj.options.auto) {
+			if (obj.options.auto && !obj.hovered) {
 				clearTimeout(obj.timer);
 				obj.timer = setTimeout(function() {
 					obj.cAnimate(obj.current + 1);
@@ -157,8 +158,10 @@
 		hoverFunc: function() {
 			var obj = this;
 			obj.el.hover(function() {
+				obj.hovered = true;
 				clearTimeout(obj.timer);
 			}, function() {
+				obj.hovered = false;
 				obj.autoSlide();
 			});
 		},
